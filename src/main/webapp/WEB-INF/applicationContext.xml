@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+        xmlns="http://www.springframework.org/schema/beans"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+        <!-- 指定连接数据库的驱动-->
+        <property name="driverClass" value="com.mysql.jdbc.Driver"/>
+        <!-- 指定连接数据库的URL-->
+        <property name="jdbcUrl"
+                  value="jdbc:mysql://localhost:3306/db_meishi?useUnicode=true&amp;amp;amp;amp;amp;amp;characterEncoding=utf-8" />
+        <!-- 指定连接数据库的用户名-->
+        <property name="user" value="root"/>
+        <!-- 指定连接数据库的密码-->
+        <property name="password" value="root"/>
+        <!-- 指定连接池中保留的最大连接数. Default:15-->
+        <property name="maxPoolSize" value="15"/>
+        <!-- 指定连接池中保留的最小连接数-->
+        <property name="minPoolSize" value="10"/>
+
+    </bean>
+    <bean id="sessionFactory"
+          class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.dialect">
+                    org.hibernate.dialect.MySQLDialect
+                </prop>
+                <prop key="hibernate.show_sql">true</prop>
+                <prop key="hibernate.hbm2ddl.auto">update</prop>
+            </props>
+        </property>
+        <property name="mappingResources">
+            <list>
+                <value>com/food/model/TAdmin.hbm.xml</value>
+                <value>com/food/model/TLiuyan.hbm.xml</value>
+                <value>com/food/model/TGonggao.hbm.xml</value>
+                <value>com/food/model/TUser.hbm.xml</value>
+                <value>com/food/model/TCatelog.hbm.xml</value>
+                <value>com/food/model/TProduct.hbm.xml</value>
+
+                <value>com/food/model/TPingjia.hbm.xml</value>
+                <value>com/food/model/TGoods.hbm.xml</value>
+                <value>com/food/model/TPicNews.hbm.xml</value>
+            </list>
+        </property>
+    </bean>
+
+
+    <bean id="indexAction" class="com.food.action.indexAction" scope="prototype">
+        <property name="productDAO">
+            <ref bean="TProductDAO"/>
+        </property>
+
+        <property name="catelogDAO">
+            <ref bean="TCatelogDAO"/>
+        </property>
+        <property name="picNewsDAO">
+            <ref bean="TPicNewsDAO"/>
+        </property>
+    </bean>
+
+    <bean id="TPicNewsDAO" class="com.food.dao.TPicNewsDAO">
+        <property name="sessionFactory">
+            <ref bean="sessionFactory"/>
+        </property>
+    </bean>
+    <bean id="picNewsAction" class="com.food.action.picNewsAction" scope="prototype">
+        <property name="picNewsDAO">
+            <ref bean="TPicNewsDAO"/>
+        </property>
+    </bean>
+
+
+    <bean id="TUserDAO" class="com.food.dao.TUserDAO">
+        <property name="sessionFactory">
+            <ref bean="sessionFactory"></ref>
+        </property>
+    </bean>
+
+    <bean id="userAction" class="com.food.action.UserAction" scope="prototype">
+        <property name="userDAO">
+            <ref bean="TUserDAO"/>
+        </property>
+    </bean>
+
+
+    <!-- 后台的登录 -->
+    <bean id="loginService" class="com.food.service.loginService">
+        <property name="adminDAO">
+            <ref bean="TAdminDAO"/>
+        </property>
+        <property name="userDAO">
+            <ref bean="TUserDAO"/>
+        </property>
+    </bean>
+
+
+    <bean id="TAdminDAO" class="com.food.dao.TAdminDAO">
+        <property name="sessionFactory">
+            <ref bean="sessionFactory"/>
+        </property>
+    </bean>
+    <bean id="adminAction" class="com.food.action.adminAction" scope="prototype">
+        <property name="adminDAO">
+            <ref bean="TAdminDAO"/>
+        </property>
+    </bean>
+
+
+    <bean id="TLiuyanDAO" class="com.food.dao.TLiuyanDAO">
+        <property name="sessionFactory">
+            <ref bean="sessionFactory"/>
+        </property>
+    </bean>
+    <bean id="liuyanAction" class="com.food.action.liuyanAction" scope="prototype">
+        <property name="liuyanDAO">
+            <ref bean="TLiuyanDAO"/>
+        </property>
+    </bean>
+
+
+    <bean id="TGonggaoDAO" class="com.food.dao.TGonggaoDAO">
+        <property name="sessionFactory">
+            <ref bean="sessionFactory"></ref>
+        </property>
+    </bean>
+    <bean id="gonggaoAction" class="com.food.action.gonggaoAction" scope="prototype">
+        <property name="gonggaoDAO">
+            <ref bean="TGonggaoDAO"/>
+        </property>
+    </bean>
+
+
+    <bean id="TCatelogDAO" class="com.food.dao.TCatelogDAO">
+        <property name="sessionFactory">
+            <ref bean="sessionFactory"/>
+        </property>
+    </bean>
+    <bean id="catelogService" class="com.food.service.catelogService">
+        <property name="catelogDAO">
+            <ref bean="TCatelogDAO"/>
+        </property>
+    </bean>
+    <bean id="catelogAction" class="com.food.action.catelogAction" scope="prototype">
+        <property name="catelogDAO">
+            <ref bean="TCatelogDAO"/>
+        </property>
+        <property name="productDAO">
+            <ref bean="TProductDAO"/>
+        </property>
+    </bean>
+
+
+    <bean id="TProductDAO" class="com.food.dao.TProductDAO">
+        <property name="sessionFactory">
+            <ref bean="sessionFactory"/>
+        </property>
+    </bean>
+    <bean id="productAction" class="com.food.action.productAction" scope="prototype">
+        <property name="productDAO">
+            <ref bean="TProductDAO"/>
+        </property>
+        <property name="catelogDAO">
+            <ref bean="TCatelogDAO"/>
+        </property>
+        <property name="pingjiaDAO">
+            <ref bean="TPingjiaDAO"/>
+        </property>
+    </bean>
+    <bean id="TPingjiaDAO" class="com.food.dao.TPingjiaDAO">
+        <property name="sessionFactory">
+            <ref bean="sessionFactory"/>
+        </property>
+    </bean>
+    <bean id="pingjiaAction" class="com.food.action.pingjiaAction" scope="prototype">
+        <property name="pingjiaDAO">
+            <ref bean="TPingjiaDAO"/>
+        </property>
+        <property name="productDAO">
+            <ref bean="TProductDAO"/>
+        </property>
+
+    </bean>
+
+    <bean id="TGoodsDAO" class="com.food.dao.TGoodsDAO">
+        <property name="sessionFactory">
+            <ref bean="sessionFactory"/>
+        </property>
+    </bean>
+    <bean id="goodsAction" class="com.food.action.goodsAction" scope="prototype">
+        <property name="goodsDAO">
+            <ref bean="TGoodsDAO"/>
+        </property>
+        <property name="catelogDAO">
+            <ref bean="TCatelogDAO"/>
+        </property>
+        <property name="pingjiaDAO">
+            <ref bean="TPingjiaDAO"/>
+        </property>
+    </bean>
+</beans>
